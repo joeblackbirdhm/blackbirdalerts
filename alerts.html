@@ -134,8 +134,8 @@
 
         // Update the body header with the last updated time in USA Central time
         const now = new Date();
-        const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
-        const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
+        const centralOffset = -6 * 60 * 60 * 1000; // USA Central time offset in milliseconds
+        const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US', { timeZone: 'America/Chicago' });
         document.getElementById('pageTitle').innerHTML = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
     }
 
