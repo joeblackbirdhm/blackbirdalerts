@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">NWS Weather Alerts</title>
+    <title>NWS Weather Alerts</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-    <h1>Weather Alerts</h1>
+    <h1 id="pageTitle">Weather Alerts</h1>
 
     <div id="alertsContainer"></div>
 
@@ -125,10 +125,11 @@
                 });
 
             // Update the body title with the last updated time in USA Central time
+            const pageTitle = document.getElementById('pageTitle');
             const now = new Date();
             const centralOffset = -5 * 60; // USA Central time offset in minutes
             const centralTime = new Date(now.getTime() + centralOffset * 60000).toLocaleTimeString('en-US');
-            document.title = `NWS Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+            pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
         }
 
         // Fetch initial alerts and set the initial display title
