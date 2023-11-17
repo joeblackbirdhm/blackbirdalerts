@@ -59,91 +59,91 @@
             { latitude: 42.2547, longitude: -73.7940, name: 'Warren St Suite | Hudson' },
             { latitude: 32.8841, longitude: -95.5522, name: 'Wava Sue | Yantis (Lake Fork)' }
             // Add more entries for other custom points
-        ];
+    ];
 
-        function getWeatherAlerts(latitude, longitude, displayName) {
-            const nwsApiEndpoint = `https://api.weather.gov/alerts/active?point=${latitude},${longitude}`;
+    function getWeatherAlerts(latitude, longitude, displayName) {
+        const nwsApiEndpoint = `https://api.weather.gov/alerts/active?point=${latitude},${longitude}`;
 
-            return fetch(nwsApiEndpoint)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.features && data.features.length > 0) {
-                        displayAlerts(data, displayName);
-                        return true; // Alerts found for this point
-                    } else {
-                        return false; // No alerts for this point
-                    }
-                })
-                .catch(error => {
-                    console.error(`Error fetching data for point ${displayName} (${latitude},${longitude}):`, error);
-                    return false; // Error fetching data for this point
-                });
-        }
+        return fetch(nwsApiEndpoint)
+            .then(response => response.json())
+            .then(data => {
+                if (data.features && data.features.length > 0) {
+                    displayAlerts(data, displayName);
+                    return true; // Alerts found for this point
+                } else {
+                    return false; // No alerts for this point
+                }
+            })
+            .catch(error => {
+                console.error(`Error fetching data for point ${displayName} (${latitude},${longitude}):`, error);
+                return false; // Error fetching data for this point
+            });
+    }
 
-        function displayAlerts(data, displayName) {
-            const alertsContainer = document.getElementById('alertsContainer');
-            const alertElement = document.createElement('div');
+    function displayAlerts(data, displayName) {
+        const alertsContainer = document.getElementById('alertsContainer');
+        const alertElement = document.createElement('div');
 
-            alertElement.innerHTML = `<h2>${displayName}</h2>`;
+        alertElement.innerHTML = `<h2>${displayName}</h2>`;
 
-            data.features.forEach(feature => {
-                alertElement.innerHTML += `
-                    <strong>${feature.properties.headline}</strong><br>
-                    <strong>Description:</strong> ${feature.properties.description || 'N/A'}<br>
-                    <strong>Instruction:</strong> ${feature.properties.instruction || 'N/A'}<br>
-                    <em>${new Date(feature.properties.expires).toLocaleString()}</em><br><br>
-                `;
+        data.features.forEach(feature => {
+            alertElement.innerHTML += `
+                <strong>${feature.properties.headline}</strong><br>
+                <strong>Description:</strong> ${feature.properties.description || 'N/A'}<br>
+                <strong>Instruction:</strong> ${feature.properties.instruction || 'N/A'}<br>
+                <em>${new Date(feature.properties.expires).toLocaleString()}</em><br><br>
+            `;
+        });
+
+        alertsContainer.appendChild(alertElement);
+    }
+
+    function displayNoAlerts() {
+        const alertsContainer = document.getElementById('alertsContainer');
+        const alertElement = document.createElement('div');
+
+        alertElement.innerHTML = '<h2>No active alerts issued.</h2>';
+
+        alertsContainer.appendChild(alertElement);
+    }
+
+    function updateWeatherAlerts() {
+        // Clear existing alerts
+        document.getElementById('alertsContainer').innerHTML = '';
+
+        let anyAlertsFound = false;
+
+        // Fetch alerts for each custom point
+        Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
+            .then(alertResults => {
+                // Check if any alerts were found for any point
+                anyAlertsFound = alertResults.some(found => found);
+
+                // If no alerts found anywhere, display global message
+                if (!anyAlertsFound) {
+                    displayNoAlerts();
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching alerts:", error);
+                // Display global message if there's an error fetching alerts
+                if (!anyAlertsFound) {
+                    displayNoAlerts();
+                }
             });
 
-            alertsContainer.appendChild(alertElement);
-        }
+        // Update the body header with the last updated time in USA Central time
+        const now = new Date();
+        const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
+        const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
+        document.getElementById('pageTitle').innerHTML = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+    }
 
-        function displayNoAlerts() {
-            const alertsContainer = document.getElementById('alertsContainer');
-            const alertElement = document.createElement('div');
+    // Fetch initial alerts and set the initial display title
+    updateWeatherAlerts();
 
-            alertElement.innerHTML = '<h2>No active alerts issued.</h2>';
-
-            alertsContainer.appendChild(alertElement);
-        }
-
-        function updateWeatherAlerts() {
-            // Clear existing alerts
-            document.getElementById('alertsContainer').innerHTML = '';
-
-            let anyAlertsFound = false;
-
-            // Fetch alerts for each custom point
-            Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
-                .then(alertResults => {
-                    // Check if any alerts were found for any point
-                    anyAlertsFound = alertResults.some(found => found);
-
-                    // If no alerts found anywhere, display global message
-                    if (!anyAlertsFound) {
-                        displayNoAlerts();
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching alerts:", error);
-                    // Display global message if there's an error fetching alerts
-                    if (!anyAlertsFound) {
-                        displayNoAlerts();
-                    }
-                });
-
-            // Update the body header with the last updated time in USA Central time
-            const now = new Date();
-            const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
-            const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
-            document.title = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
-        }
-
-        // Fetch initial alerts and set the initial display title
-        updateWeatherAlerts();
-
-        // Update alerts every 1 minute
-        setInterval(updateWeatherAlerts, 60000); // 60000 milliseconds = 1 minute
-    </script>
+    // Update alerts every 1 minute
+    setInterval(updateWeatherAlerts, 60000); // 60000 milliseconds = 1 minute
+</script>
 </body>
 </html>
