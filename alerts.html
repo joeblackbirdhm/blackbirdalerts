@@ -71,10 +71,9 @@
             { latitude: 42.4005, longitude: -74.1675, name: 'Route 22 | Durham' },
             { latitude: 44.9556, longitude: -85.1924, name: 'Shanty Creek | Bellaire' },
             { latitude: 42.2547, longitude: -73.7940, name: 'Warren St Suite | Hudson' },
-            { latitude: 44.4026, longitude: -121.8513, name: 'Test alert | Santiam Pass OR' },
             { latitude: 32.8841, longitude: -95.5522, name: 'Wava Sue | Yantis (Lake Fork)' }
             // Add more entries for other custom points
-        ];
+    ];
 
     function getWeatherAlerts(latitude, longitude, displayName) {
         const nwsApiEndpoint = `https://api.weather.gov/alerts/active?point=${latitude},${longitude}`;
@@ -151,7 +150,7 @@
         const now = new Date();
         const centralOffset = -6 * 60 * 60 * 1000; // USA Central time offset in milliseconds
         const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
-        document.getElementById('pageTitle').textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+        document.getElementById('pageTitle').innerHTML = `<h1>Weather Alerts - Last updated at ${centralTime} (Central Time)</h1>`;
     }
 
     // Fetch initial alerts and set the initial display title
