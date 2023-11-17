@@ -147,11 +147,11 @@
                 }
             });
 
-        // Update the body title with the last updated time in USA Central time
+        // Update the body header with the last updated time in USA Central time
         const now = new Date();
-        const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
+        const centralOffset = -6 * 60 * 60 * 1000; // USA Central time offset in milliseconds
         const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
-        document.title = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+        document.getElementById('pageTitle').textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
     }
 
     // Fetch initial alerts and set the initial display title
