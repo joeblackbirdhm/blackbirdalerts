@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NWS Weather Alerts</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        #alertsContainer {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #FF4500;
+        }
+
+        em {
+            color: #28A745;
+        }
+
+        p {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Alerts</h1>
+
+    <div id="alertsContainer"></div>
+
+    <script>
+        const customPoints = [
+            { latitude: 32.6835, longitude: -97.0470, name: 'Ashwood | Grand Prairie' },
+            { latitude: 38.1433, longitude: -92.7335, name: 'Bay Point | Osage Beach (Ozarks)' },
+            { latitude: 27.8962, longitude: -82.8437, name: 'Bayshore | Indian Rocks Beach' },
+            { latitude: 32.7805, longitude: -97.0291, name: 'Carrier | Grand Prairie' },
+            { latitude: 42.2194, longitude: -73.8661, name: 'Catskill Cottage | Catskill' },
+            { latitude: 45.0295, longitude: -83.4566, name: 'Channel Road | Alpena' },
+            { latitude: 38.2283, longitude: -92.7572, name: 'Emerald A | Gravois Mills (Ozarks)' },
+            { latitude: 44.4196, longitude: -83.8375, name: 'Hale Haven | Hale' },
+            { latitude: 34.9856, longitude: -84.0489, name: 'Highland Trace | Blairsville' },
+            { latitude: 43.7407, longitude: -85.4253, name: 'Hillside Hideaway | Big Rapids' },
+            { latitude: 32.7536, longitude: -97.3307, name: 'Kress 403/405 | Fort Worth' },
+            { latitude: 43.7725, longitude: -85.8072, name: 'Lilley Pad | Bitely' },
+            { latitude: 41.2462, longitude: -95.9323, name: 'Little Bo 112/220/304 | Omaha' },
+            { latitude: 42.0952, longitude: -73.9405, name: 'Mike Krout | Saugerties' },
+            { latitude: 46.7597, longitude: -122.0139, name: 'Mt Tahoma | Ashford' },
+            { latitude: 44.2525, longitude: -85.3995, name: 'Orange Cadillac | Cadillac' },
+            { latitude: 41.1547, longitude: -75.5562, name: 'Owassa | Pocono Lake' },
+            { latitude: 43.8936, longitude: -85.8851, name: 'Reel Paradise | Baldwin' },
+            { latitude: 42.4005, longitude: -74.1675, name: 'Route 22 | Durham' },
+            { latitude: 44.9556, longitude: -85.1924, name: 'Shanty Creek | Bellaire' },
+            { latitude: 42.2547, longitude: -73.7940, name: 'Warren St Suite | Hudson' },
+            { latitude: 32.8841, longitude: -95.5522, name: 'Wava Sue | Yantis (Lake Fork)' }
+
+
+           
+            // Add more entries for other custom points
+        ];
+
+        function getWeatherAlerts(latitude, longitude, displayName) {
+            const nwsApiEndpoint = `https://api.weather.gov/alerts/active?point=${latitude},${longitude}`;
+
+            return fetch(nwsApiEndpoint)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.features && data.features.length > 0) {
+                        displayAlerts(data, displayName);
+                    } else {
+                        console.log(`No alerts for ${displayName}.`);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error fetching data for point ${displayName} (${latitude},${longitude}):`, error);
+                });
+        }
+
+        function displayAlerts(data, displayName) {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alertElement = document.createElement('div');
+
+            alertElement.innerHTML = `<h2>${displayName}</h2>`;
+
+            data.features.forEach(feature => {
+                alertElement.innerHTML += `
+                    <strong>${feature.properties.headline}</strong><br>
+                    <strong>Description:</strong> ${feature.properties.description || 'N/A'}<br>
+                    <strong>Instruction:</strong> ${feature.properties.instruction || 'N/A'}<br>
+                    <em>${new Date(feature.properties.expires).toLocaleString()}</em><br><br>
+                `;
+            });
+
+            alertsContainer.appendChild(alertElement);
+        }
+
+        // Fetch alerts for each custom point
+        Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
+            .then(() => {
+                // All alerts fetched
+            })
+            .catch(error => {
+                console.error("Error fetching alerts:", error);
+            });
+    </script>
+</body>
+</html>
