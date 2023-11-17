@@ -84,12 +84,14 @@
                 .then(data => {
                     if (data.features && data.features.length > 0) {
                         displayAlerts(data, displayName);
+                        return true; // Alerts found for this point
                     } else {
-                        displayNoAlerts();
+                        return false; // No alerts for this point
                     }
                 })
                 .catch(error => {
                     console.error(`Error fetching data for point ${displayName} (${latitude},${longitude}):`, error);
+                    return false; // Error fetching data for this point
                 });
         }
 
@@ -111,6 +113,40 @@
             alertsContainer.appendChild(alertElement);
         }
 
+        function updateWeatherAlerts() {
+            // Clear existing alerts
+            document.getElementById('alertsContainer').innerHTML = '';
+
+            let anyAlertsFound = false;
+
+            // Fetch alerts for each custom point
+            Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
+                .then(alertResults => {
+                    // Check if any alerts were found for any point
+                    anyAlertsFound = alertResults.some(found => found);
+
+                    // If no alerts found anywhere, display global message
+                    if (!anyAlertsFound) {
+                        displayNoAlerts();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching alerts:", error);
+                    // Display global message if there's an error fetching alerts
+                    if (!anyAlertsFound) {
+                        displayNoAlerts();
+                    }
+                });
+
+            // Update the body title with the last updated time in USA Central time
+            const pageTitle = document.getElementById('pageTitle');
+            const now = new Date();
+            const utcTime = now.getTime() + now.getTimezoneOffset() * 60000; // Get UTC time
+            const centralOffset = -6 * 60 * 60 * 1000; // USA Central time offset in milliseconds
+            const centralTime = new Date(utcTime + centralOffset).toLocaleTimeString('en-US');
+            pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+        }
+
         function displayNoAlerts() {
             const alertsContainer = document.getElementById('alertsContainer');
             const alertElement = document.createElement('div');
@@ -118,30 +154,6 @@
             alertElement.innerHTML = '<h2>No active alerts issued.</h2>';
 
             alertsContainer.appendChild(alertElement);
-        }
-
-        function updateWeatherAlerts() {
-            // Clear existing alerts
-            document.getElementById('alertsContainer').innerHTML = '';
-
-            // Fetch alerts for each custom point
-            Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
-                .then(() => {
-                    // All alerts fetched
-                })
-                .catch(error => {
-                    console.error("Error fetching alerts:", error);
-                    // Display global message if there's an error fetching alerts
-                    displayNoAlerts();
-                });
-
-            // Update the body title with the last updated time in USA Central time
-            const pageTitle = document.getElementById('pageTitle');
-            const now = new Date();
-            const utcTime = now.getTime() + now.getTimezoneOffset() * 60000; // Get UTC time
-            const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
-            const centralTime = new Date(utcTime + centralOffset).toLocaleTimeString('en-US');
-            pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
         }
 
         // Fetch initial alerts and set the initial display title
