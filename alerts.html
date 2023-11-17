@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWS Weather Alerts</title>
+    <title id="pageTitle">NWS Weather Alerts</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -123,13 +123,14 @@
                 .catch(error => {
                     console.error("Error fetching alerts:", error);
                 });
+
             // Update the page title with the last updated time in USA Central time
             const pageTitle = document.getElementById('pageTitle');
             const centralTime = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
             pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
         }
 
-        // Fetch initial alerts
+        // Fetch initial alerts and set the initial display title
         updateWeatherAlerts();
 
         // Update alerts every 1 minute
