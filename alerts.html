@@ -113,39 +113,39 @@
             alertsContainer.appendChild(alertElement);
         }
 
-        function updateWeatherAlerts() {
-            // Clear existing alerts
-            document.getElementById('alertsContainer').innerHTML = '';
+    function updateWeatherAlerts() {
+        // Clear existing alerts
+        document.getElementById('alertsContainer').innerHTML = '';
 
-            let anyAlertsFound = false;
+        let anyAlertsFound = false;
 
-            // Fetch alerts for each custom point
-            Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
-                .then(alertResults => {
-                    // Check if any alerts were found for any point
-                    anyAlertsFound = alertResults.some(found => found);
+        // Fetch alerts for each custom point
+        Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
+            .then(alertResults => {
+                // Check if any alerts were found for any point
+                anyAlertsFound = alertResults.some(found => found);
 
-                    // If no alerts found anywhere, display global message
-                    if (!anyAlertsFound) {
-                        displayNoAlerts();
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching alerts:", error);
-                    // Display global message if there's an error fetching alerts
-                    if (!anyAlertsFound) {
-                        displayNoAlerts();
-                    }
-                });
+                // If no alerts found anywhere, display global message
+                if (!anyAlertsFound) {
+                    displayNoAlerts();
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching alerts:", error);
+                // Display global message if there's an error fetching alerts
+                if (!anyAlertsFound) {
+                    displayNoAlerts();
+                }
+            });
 
-            // Update the body title with the last updated time in USA Central time
-            const pageTitle = document.getElementById('pageTitle');
-            const now = new Date();
-            const utcTime = now.getTime() + now.getTimezoneOffset() * 60000; // Get UTC time
-            const centralOffset = -6 * 60 * 60 * 1000; // USA Central time offset in milliseconds
-            const centralTime = new Date(utcTime + centralOffset).toLocaleTimeString('en-US');
-            pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
-        }
+        // Update the body title with the last updated time in USA Central time
+        const pageTitle = document.getElementById('pageTitle');
+        const now = new Date();
+        const utcTime = now.getTime() + now.getTimezoneOffset() * 60000; // Get UTC time
+        const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
+        const centralTime = new Date(utcTime + centralOffset).toLocaleTimeString('en-US');
+        pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+    }
 
         function displayNoAlerts() {
             const alertsContainer = document.getElementById('alertsContainer');
