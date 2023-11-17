@@ -124,12 +124,11 @@
                     console.error("Error fetching alerts:", error);
                 });
 
-            // Update the page title with the last updated time in USA Central time
-            const pageTitle = document.getElementById('pageTitle');
+            // Update the body title with the last updated time in USA Central time
             const now = new Date();
             const centralOffset = -5 * 60; // USA Central time offset in minutes
             const centralTime = new Date(now.getTime() + centralOffset * 60000).toLocaleTimeString('en-US');
-            pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+            document.title = `NWS Weather Alerts - Last updated at ${centralTime} (Central Time)`;
         }
 
         // Fetch initial alerts and set the initial display title
