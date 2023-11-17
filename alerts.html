@@ -123,13 +123,17 @@
                 .catch(error => {
                     console.error("Error fetching alerts:", error);
                 });
+            // Update the page title with the last updated time in USA Central time
+            const pageTitle = document.getElementById('pageTitle');
+            const centralTime = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+            pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
         }
 
         // Fetch initial alerts
         updateWeatherAlerts();
 
         // Update alerts every 1 minute
-        setInterval(updateWeatherAlerts, 60000); // 60000 milliseconds = 1 minute
+        setInterval(updateWeatherAlerts, 10000); // 60000 milliseconds = 1 minute
     </script>
 </body>
 </html>
