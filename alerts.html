@@ -150,7 +150,7 @@
         const now = new Date();
         const centralOffset = -6 * 60 * 60 * 1000; // USA Central time offset in milliseconds
         const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
-        document.getElementById('pageTitle').innerHTML = `<h1>Weather Alerts - Last updated at ${centralTime} (Central Time)</h1>`;
+        document.getElementById('pageTitle').textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
     }
 
     // Fetch initial alerts and set the initial display title
