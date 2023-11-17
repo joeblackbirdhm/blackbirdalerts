@@ -126,7 +126,9 @@
 
             // Update the page title with the last updated time in USA Central time
             const pageTitle = document.getElementById('pageTitle');
-            const centralTime = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+            const now = new Date();
+            const centralOffset = -5 * 60; // USA Central time offset in minutes
+            const centralTime = new Date(now.getTime() + centralOffset * 60000).toLocaleTimeString('en-US');
             pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
         }
 
