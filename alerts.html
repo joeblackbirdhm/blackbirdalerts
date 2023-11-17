@@ -76,42 +76,51 @@
             // Add more entries for other custom points
         ];
 
-        function getWeatherAlerts(latitude, longitude, displayName) {
-            const nwsApiEndpoint = `https://api.weather.gov/alerts/active?point=${latitude},${longitude}`;
+    function getWeatherAlerts(latitude, longitude, displayName) {
+        const nwsApiEndpoint = `https://api.weather.gov/alerts/active?point=${latitude},${longitude}`;
 
-            return fetch(nwsApiEndpoint)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.features && data.features.length > 0) {
-                        displayAlerts(data, displayName);
-                        return true; // Alerts found for this point
-                    } else {
-                        return false; // No alerts for this point
-                    }
-                })
-                .catch(error => {
-                    console.error(`Error fetching data for point ${displayName} (${latitude},${longitude}):`, error);
-                    return false; // Error fetching data for this point
-                });
-        }
-
-        function displayAlerts(data, displayName) {
-            const alertsContainer = document.getElementById('alertsContainer');
-            const alertElement = document.createElement('div');
-
-            alertElement.innerHTML = `<h2>${displayName}</h2>`;
-
-            data.features.forEach(feature => {
-                alertElement.innerHTML += `
-                    <strong>${feature.properties.headline}</strong><br>
-                    <strong>Description:</strong> ${feature.properties.description || 'N/A'}<br>
-                    <strong>Instruction:</strong> ${feature.properties.instruction || 'N/A'}<br>
-                    <em>${new Date(feature.properties.expires).toLocaleString()}</em><br><br>
-                `;
+        return fetch(nwsApiEndpoint)
+            .then(response => response.json())
+            .then(data => {
+                if (data.features && data.features.length > 0) {
+                    displayAlerts(data, displayName);
+                    return true; // Alerts found for this point
+                } else {
+                    return false; // No alerts for this point
+                }
+            })
+            .catch(error => {
+                console.error(`Error fetching data for point ${displayName} (${latitude},${longitude}):`, error);
+                return false; // Error fetching data for this point
             });
+    }
 
-            alertsContainer.appendChild(alertElement);
-        }
+    function displayAlerts(data, displayName) {
+        const alertsContainer = document.getElementById('alertsContainer');
+        const alertElement = document.createElement('div');
+
+        alertElement.innerHTML = `<h2>${displayName}</h2>`;
+
+        data.features.forEach(feature => {
+            alertElement.innerHTML += `
+                <strong>${feature.properties.headline}</strong><br>
+                <strong>Description:</strong> ${feature.properties.description || 'N/A'}<br>
+                <strong>Instruction:</strong> ${feature.properties.instruction || 'N/A'}<br>
+                <em>${new Date(feature.properties.expires).toLocaleString()}</em><br><br>
+            `;
+        });
+
+        alertsContainer.appendChild(alertElement);
+    }
+
+    function displayNoAlerts() {
+        const alertsContainer = document.getElementById('alertsContainer');
+        const alertElement = document.createElement('div');
+
+        alertElement.innerHTML = '<h2>No active alerts issued.</h2>';
+
+        alertsContainer.appendChild(alertElement);
+    }
 
     function updateWeatherAlerts() {
         // Clear existing alerts
@@ -139,28 +148,17 @@
             });
 
         // Update the body title with the last updated time in USA Central time
-        const pageTitle = document.getElementById('pageTitle');
         const now = new Date();
-        const utcTime = now.getTime() + now.getTimezoneOffset() * 60000; // Get UTC time
         const centralOffset = -5 * 60 * 60 * 1000; // USA Central time offset in milliseconds
-        const centralTime = new Date(utcTime + centralOffset).toLocaleTimeString('en-US');
-        pageTitle.textContent = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
+        const centralTime = new Date(now.getTime() + centralOffset).toLocaleTimeString('en-US');
+        document.title = `Weather Alerts - Last updated at ${centralTime} (Central Time)`;
     }
 
-        function displayNoAlerts() {
-            const alertsContainer = document.getElementById('alertsContainer');
-            const alertElement = document.createElement('div');
+    // Fetch initial alerts and set the initial display title
+    updateWeatherAlerts();
 
-            alertElement.innerHTML = '<h2>No active alerts issued.</h2>';
-
-            alertsContainer.appendChild(alertElement);
-        }
-
-        // Fetch initial alerts and set the initial display title
-        updateWeatherAlerts();
-
-        // Update alerts every 1 minute
-        setInterval(updateWeatherAlerts, 60000); // 60000 milliseconds = 1 minute
-    </script>
+    // Update alerts every 1 minute
+    setInterval(updateWeatherAlerts, 60000); // 60000 milliseconds = 1 minute
+</script>
 </body>
 </html>
