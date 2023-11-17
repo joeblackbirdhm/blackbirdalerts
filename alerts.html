@@ -73,9 +73,6 @@
             { latitude: 42.2547, longitude: -73.7940, name: 'Warren St Suite | Hudson' },
             { latitude: 47.1311, longitude: -118.3686, name: 'Test run | Ritzville WA' },
             { latitude: 32.8841, longitude: -95.5522, name: 'Wava Sue | Yantis (Lake Fork)' }
-
-
-           
             // Add more entries for other custom points
         ];
 
@@ -114,14 +111,25 @@
             alertsContainer.appendChild(alertElement);
         }
 
-        // Fetch alerts for each custom point
-        Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
-            .then(() => {
-                // All alerts fetched
-            })
-            .catch(error => {
-                console.error("Error fetching alerts:", error);
-            });
+        function updateWeatherAlerts() {
+            // Clear existing alerts
+            document.getElementById('alertsContainer').innerHTML = '';
+
+            // Fetch alerts for each custom point
+            Promise.all(customPoints.map(point => getWeatherAlerts(point.latitude, point.longitude, point.name)))
+                .then(() => {
+                    // All alerts fetched
+                })
+                .catch(error => {
+                    console.error("Error fetching alerts:", error);
+                });
+        }
+
+        // Fetch initial alerts
+        updateWeatherAlerts();
+
+        // Update alerts every 1 minute
+        setInterval(updateWeatherAlerts, 60000); // 60000 milliseconds = 1 minute
     </script>
 </body>
 </html>
